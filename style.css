@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap');
+
+* {
+	margin: 0;
+	padding: 0;
+	font-family: 'Space Grotesk', sans-serif;
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	height: 100vh;
+}
+
+#grid {
+	display: flex;
+	flex-direction: column;
+	border-radius: 5px;
+	background-color: lightgrey;
+	width: 440px;
+	margin: 10px;
+}
+
+.score-box {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	background-color: #d3d3d3;
+	height: 30px;
+	padding: 15px;
+	border-radius: 5px;
+}
+
+.line {
+	display: flex;
+}
+
+.number {
+	display: table-cell;
+	width: 100px;
+	height: 100px;
+	line-height: 100px;
+	background-color: darkgray;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 30px;
+	margin: 10px;
+}
+
+.zero {
+	font-size: 0;
+}
+
+.two {
+	background-color: #ffeaa7;
+}
+
+.four {
+	background-color: #fdda68;
+}
+
+.height {
+	background-color: #ffc400;
+}
+
+.sixteen {
+	background-color: #da8300;
+}
+
+.thirty-two {
+	background-color: #da6200;
+}
+
+.sixty-four {
+	background-color: #da4500;
+}
+
+.one-hundred-twenty-eight,
+.two-hundred-fifty-six,
+.five-hundred-twelve {
+	background-color: #da2c00;
+}
+
+.one-thousand-twenty-four {
+	background-color: #da0000;
+}
+
+.two-thousand-four-hundred-eight {
+	background-color: #000000;
+}
