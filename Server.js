@@ -34,6 +34,7 @@ app.get('/api/restart', (req, res) => {
   res.sendStatus(200);
 });
 
+Game.StartServer()
 Game.RestartGame()
 
 app.listen(8080, () => console.log("Server started on port 8080"));

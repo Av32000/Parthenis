@@ -1,11 +1,13 @@
 const WebSocket = require("ws");
 
-const server = new WebSocket.Server({ port: 5000 });
 let ws
-server.on("connection", function (socket) {
-  ws = socket
-  UpdateGrid()
-});
+function StartServer() {
+  const server = new WebSocket.Server({ port: 5000 });
+  server.on("connection", function (socket) {
+    ws = socket
+    UpdateGrid()
+  });
+}
 
 let grid = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
 let gScore = 0
@@ -25,6 +27,14 @@ function AddRandomCase(cGrid) {
   let selected = cleared[Math.floor(Math.random() * cleared.length)]
   result[selected.x][selected.y] = Math.random() > 0.8 ? 4 : 2
   return result
+}
+
+function getGrid() {
+  return grid
+}
+
+function getScore() {
+  return gScore
 }
 
 function SendRight() {
@@ -122,6 +132,33 @@ function SendDown() {
   return { grid: result, score: score }
 }
 
+function CheckState() {
+  if (ws == null) return
+  // Check Win
+  let win = false;
+  let loose = true;
+
+  for (let i = 0; i < grid.length; i++) {
+    if (grid[i].includes(2048)) {
+      win = true;
+      break;
+    }
+  }
+
+  if (!equalsCheck(grid, SendRight().grid)) loose = false
+  if (!equalsCheck(grid, SendLeft().grid)) loose = false
+  if (!equalsCheck(grid, SendUp().grid)) loose = false
+  if (!equalsCheck(grid, SendDown().grid)) loose = false
+
+  if (win) ws.send(JSON.stringify({
+    type: "Win"
+  }))
+
+  if (loose) ws.send(JSON.stringify({
+    type: "Loose"
+  }))
+}
+
 function SendLeft() {
   let result = clone(grid)
   let resultTemp = clone(grid)
@@ -203,6 +240,7 @@ function UpdateGrid() {
 function Save(nGrid) {
   grid = nGrid
   UpdateGrid()
+  CheckState()
 }
 
 function RestartGame() {
@@ -219,5 +257,8 @@ module.exports = {
   SendRight,
   SendUp,
   Save,
-  AddToScore
+  AddToScore,
+  StartServer,
+  getGrid,
+  getScore
 }

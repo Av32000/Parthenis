@@ -108,5 +108,9 @@ socket.addEventListener("message", ev => {
     grid = data.grid
     score = data.score
     UpdateGrid()
+  } else if (data.type == "Win") {
+    alert("You Win")
+  } else if (data.type == "Loose") {
+    alert("You loose")
   }
 })
