@@ -2,10 +2,12 @@ const Game = require("./Game")
 const progressBar = require("progress-bar-cli");
 
 const options = {
-  retry: true,
-  tryCount: 1000,
-  verbose: false,
-  mps: 0
+  retry: false,
+  tryCount: 100,
+  verbose: true,
+  mps: 10,
+  depth: 6,
+  server: true
 }
 
 const weight = {
@@ -16,16 +18,18 @@ const weight = {
 let scores = []
 let wins = 0
 
-if (options.mps > 0) Game.StartServer()
+if (options.server) Game.StartServer()
 Game.RestartGame()
 
+
+let recursiveMoves = []
 function Play() {
   // Generate all possible moves
   let movements = []
-  if (!equalsCheck(Game.getGrid(), Game.SendRight().grid)) movements.push({ move: "Right", score: CalculateBoardScore(Game.SendRight()) })
-  if (!equalsCheck(Game.getGrid(), Game.SendLeft().grid)) movements.push({ move: "Left", score: CalculateBoardScore(Game.SendLeft()) })
-  if (!equalsCheck(Game.getGrid(), Game.SendUp().grid)) movements.push({ move: "Up", score: CalculateBoardScore(Game.SendUp()) })
-  if (!equalsCheck(Game.getGrid(), Game.SendDown().grid)) movements.push({ move: "Down", score: CalculateBoardScore(Game.SendDown()) })
+  if (!equalsCheck(Game.getGrid(), Game.SendRight().grid)) movements.push({ move: "Right", score: RecursiveDepth(Game.SendRight().grid, recursiveMoves, 1) })
+  if (!equalsCheck(Game.getGrid(), Game.SendLeft().grid)) movements.push({ move: "Left", score: RecursiveDepth(Game.SendLeft().grid, recursiveMoves, 1) })
+  if (!equalsCheck(Game.getGrid(), Game.SendUp().grid)) movements.push({ move: "Up", score: RecursiveDepth(Game.SendUp().grid, recursiveMoves, 1) })
+  if (!equalsCheck(Game.getGrid(), Game.SendDown().grid)) movements.push({ move: "Down", score: RecursiveDepth(Game.SendDown().grid, recursiveMoves, 1) })
 
   // Play Best Move
   if (movements.length === 0) {
@@ -69,7 +73,7 @@ function Play() {
   }
 
   if (CheckWin()) {
-    if (verbose) console.log("I Win !!!");
+    if (options.verbose) console.log("I Win !!!");
     wins++
     return
   }
@@ -83,6 +87,55 @@ function Play() {
     Play()
   }
 }
+
+function RecursiveDepth(grid, parentArray, depthIndex) {
+  depthIndex++
+
+  let movements = []
+  if (!equalsCheck(grid, Game.SendRight(grid).grid)) {
+    let result = { move: "Right", grid: Game.SendRight(grid).grid, score: CalculateBoardScore(Game.SendRight(grid)), childs: [] }
+    parentArray.push(result)
+    if (depthIndex < options.depth) RecursiveDepth(Game.SendRight(grid).grid, result.childs, depthIndex)
+  }
+
+  if (!equalsCheck(grid, Game.SendLeft(grid).grid)) {
+    let result = { move: "Left", grid: Game.SendLeft(grid).grid, score: CalculateBoardScore(Game.SendLeft(grid)), childs: [] }
+    parentArray.push(result)
+    if (depthIndex < options.depth) RecursiveDepth(Game.SendLeft(grid).grid, result.childs, depthIndex)
+  }
+
+  if (!equalsCheck(grid, Game.SendUp(grid).grid)) {
+    let result = { move: "Up", grid: Game.SendUp(grid).grid, score: CalculateBoardScore(Game.SendUp(grid)), childs: [] }
+    parentArray.push(result)
+    if (depthIndex < options.depth) RecursiveDepth(Game.SendUp(grid).grid, result.childs, depthIndex)
+  }
+
+  if (!equalsCheck(grid, Game.SendDown(grid).grid)) {
+    let result = { move: "Down", grid: Game.SendDown(grid).grid, score: CalculateBoardScore(Game.SendDown(grid)), childs: [] }
+    parentArray.push(result)
+    if (depthIndex < options.depth) RecursiveDepth(Game.SendDown(grid).grid, result.childs, depthIndex)
+  }
+
+  if (depthIndex == 2) {
+    let result = clone(recursiveMoves)
+    recursiveMoves = []
+    return calculateTotalScore(result)
+  }
+}
+
+function calculateTotalScore(objects) {
+  let totalScore = 0;
+  for (let i = 0; i < objects.length; i++) {
+    const currentObject = objects[i];
+    let currentScore = currentObject.score;
+    if (currentObject.childs.length > 0) {
+      currentScore += calculateTotalScore(currentObject.childs);
+    }
+    totalScore += currentScore;
+  }
+  return totalScore;
+}
+
 
 function CalculateBoardScore(board) {
   let result = 0
@@ -155,8 +208,8 @@ if (options.retry) {
   let startTime = new Date();
   for (let index = 0; index < options.tryCount; index++) {
     Game.RestartGame()
-    Play()
     progressBar.progressBar(index, options.tryCount, startTime);
+    Play()
   }
 
   let average

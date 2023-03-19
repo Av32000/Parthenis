@@ -37,9 +37,9 @@ function getScore() {
   return gScore
 }
 
-function SendRight() {
-  let result = clone(grid)
-  let resultTemp = clone(grid)
+function SendRight(_grid) {
+  let result = clone(_grid || grid)
+  let resultTemp = clone(_grid || grid)
   let next = true
   let score = 0
   while (next) {
@@ -68,9 +68,9 @@ function SendRight() {
   return { grid: result, score: score }
 }
 
-function SendUp() {
-  let result = clone(grid)
-  let resultTemp = clone(grid)
+function SendUp(_grid) {
+  let result = clone(_grid || grid)
+  let resultTemp = clone(_grid || grid)
   let next = true
   let score = 0
   while (next) {
@@ -100,9 +100,9 @@ function SendUp() {
   return { grid: result, score: score }
 }
 
-function SendDown() {
-  let result = clone(grid)
-  let resultTemp = clone(grid)
+function SendDown(_grid) {
+  let result = clone(_grid || grid)
+  let resultTemp = clone(_grid || grid)
   let next = true
   let score = 0
   while (next) {
@@ -159,9 +159,9 @@ function CheckState() {
   }))
 }
 
-function SendLeft() {
-  let result = clone(grid)
-  let resultTemp = clone(grid)
+function SendLeft(_grid) {
+  let result = clone(_grid || grid)
+  let resultTemp = clone(_grid || grid)
   let next = true
   let score = 0
   while (next) {
