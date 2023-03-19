@@ -5,14 +5,14 @@ const options = {
   retry: false,
   tryCount: 100,
   verbose: true,
-  mps: 10,
-  depth: 6,
+  mps: 100,
+  depth: 7,
   server: true
 }
 
 const weight = {
-  score: 2,
-  blank: 4
+  score: 5,
+  blank: 20
 }
 
 let scores = []
@@ -142,6 +142,7 @@ function CalculateBoardScore(board) {
 
   result += board.score * weight.score
   result += GetBlankCases(board.grid) * weight.blank
+  if (CheckWin(board.grid)) result += 10000
 
   return result
 }
@@ -191,9 +192,9 @@ function equalsCheck(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function CheckWin() {
+function CheckWin(_grid) {
   let win = false
-  let grid = Game.getGrid()
+  let grid = _grid || Game.getGrid()
   for (let i = 0; i < grid.length; i++) {
     if (grid[i].includes(2048)) {
       win = true;
