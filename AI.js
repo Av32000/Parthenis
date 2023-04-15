@@ -5,7 +5,7 @@ const options = {
   retry: false,
   tryCount: 100,
   verbose: true,
-  mps: 100,
+  mps: 10,
   depth: 7,
   server: true
 }
@@ -23,7 +23,11 @@ Game.RestartGame()
 
 
 let recursiveMoves = []
+let delay
+let delays = []
+let moves = 0
 function Play() {
+  if(options.verbose) delay = new Date()
   // Generate all possible moves
   let movements = []
   if (!equalsCheck(Game.getGrid(), Game.SendRight().grid)) movements.push({ move: "Right", score: RecursiveDepth(Game.SendRight().grid, recursiveMoves, 1) })
@@ -35,6 +39,10 @@ function Play() {
   if (movements.length === 0) {
     if (options.retry) {
       scores.push(Game.getScore())
+    }
+    if(options.verbose) {
+      console.log(`Average Delay : ${AverageDelay()}ms`)
+      console.log(`Moves Count : ${moves}`);
     }
     return
   }
@@ -72,8 +80,18 @@ function Play() {
       break;
   }
 
+  if(options.verbose){
+    console.log(`Delay : ${new Date() - delay}ms`)
+    delays.push(new Date() - delay)
+    moves++
+  }
+
   if (CheckWin()) {
-    if (options.verbose) console.log("I Win !!!");
+    if (options.verbose) {
+      console.log("I Win !!!");
+      console.log(`Average Delay : ${AverageDelay()}ms`)
+      console.log(`Moves Count : ${moves}`);
+    }
     wins++
     return
   }
@@ -86,6 +104,14 @@ function Play() {
   } else {
     Play()
   }
+}
+
+function AverageDelay(){
+  let sum = delays.reduce((total, num) => {
+    return total + num;
+  });
+
+  return sum / delays.length;
 }
 
 function RecursiveDepth(grid, parentArray, depthIndex) {
